@@ -80,11 +80,22 @@ function addUser(user) {
 }
 
 document.getElementById('users_list').addEventListener('click', e => {
+  document.getElementById('message_user').innerHTML = ''
+
   if (e.target && e.target.matches('li.user_name_list')) {
     const idUser = e.target.getAttribute('idUser')
 
-    socket.emit('start_chat', { idUser }, room => {
+    socket.emit('start_chat', { idUser }, ({ room, messages }) => {
       idChatRoom = room.idChatRoom
+
+      messages.forEach(message => {
+        const data = {
+          message,
+          user: message.to
+        }
+
+        addMessage(data)
+      })
     })
   }
 })

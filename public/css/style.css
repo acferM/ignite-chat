@@ -91,6 +91,10 @@
   margin-right: 10px;
 }
 
+.user_name span {
+  margin-left: 10px;
+}
+
 .avatar_user_logged {
   margin-right: 10px;
   width: 50px;
