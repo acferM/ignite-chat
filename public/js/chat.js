@@ -39,7 +39,19 @@ function onLoad() {
   })
 
   socket.on('message', data => {
-    addMessage(data)
+    if (data.message.roomId === idChatRoom) {
+      addMessage(data)
+    }
+  })
+
+  socket.on('notification', data => {
+    if (data.roomId !== idChatRoom) {
+      const user = document.getElementById(`user_${data.from._id}`)
+
+      user.insertAdjacentHTML('afterbegin', `
+        <div class="notification"></div>
+      `)
+    }
   })
 }
 
@@ -80,10 +92,23 @@ function addUser(user) {
 }
 
 document.getElementById('users_list').addEventListener('click', e => {
+  const inputMessage = document.getElementById('user_message')
+  inputMessage.classList.remove('hidden')
+
+  document.querySelectorAll('li.user_name_list').forEach(item => item.classList.remove('user_in_focus'))
+
   document.getElementById('message_user').innerHTML = ''
 
   if (e.target && e.target.matches('li.user_name_list')) {
     const idUser = e.target.getAttribute('idUser')
+
+    e.target.classList.add('user_in_focus')
+
+    const notification = document.querySelector(`#user_${idUser} .notification`)
+
+    if (notification) {
+      notification.remove()
+    }
 
     socket.emit('start_chat', { idUser }, ({ room, messages }) => {
       idChatRoom = room.idChatRoom
